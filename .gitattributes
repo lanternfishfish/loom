@@ -1,0 +1,7 @@
+# 统一换行符：脚本必须保持 LF，否则在 Linux/macOS 上会报 bad interpreter
+* text=auto eol=lf
+
+# Windows 专用文件保持 CRLF
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.ps1 text eol=crlf

@@ -1,0 +1,14 @@
+# 可重建的中间物，不进 git
+tasks/*/artifacts/
+tasks/*/.state
+*.log
+!human.log
+!sessions.log
+*.tmp
+*.pyc
+__pycache__/
+.venv/
+node_modules/
+dist/
+build/
+.loomhash.json

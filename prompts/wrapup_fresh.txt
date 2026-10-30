@@ -1,0 +1,4 @@
+【收尾兜底】上一个会话没有留下有效的 summary（会话不可用）。
+只读 $task_dir/task.md、log.md 与现有产物，据此写 $task_dir/summary.md：
+status 用 partial 或 failed，说明已知进展、卡点与下一步。
+不要修改其他任何文件，不要继续做任务。
