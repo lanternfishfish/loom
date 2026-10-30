@@ -8,10 +8,12 @@ venv/
 # 测试沙箱（干跑会在这里生成 work/）
 tests/sandbox/
 tests/sandbox_kill*/
+tests/sandbox-ui*/
 
 # 运行时产物
 *.log
 .loomhash.json
+loom-ui/
 
 # 编辑器 / 系统
 .vscode/

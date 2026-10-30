@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Loom</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">LOOM</div>
+  <div class="pill" id="project">工作区未建</div>
+  <div class="run" id="runBox">
+    <span class="dot" id="runDot"></span>
+    <span id="runText">空闲</span>
+    <span class="clock" id="runClock"></span>
+  </div>
+  <div class="spacer"></div>
+  <div class="actions">
+    <button id="btnStop" class="btn danger" disabled>打断</button>
+    <button id="btnRun" class="btn primary">续跑</button>
+  </div>
+</header>
+
+<div class="composer" id="composer" hidden>
+  <textarea id="instr" rows="3" spellcheck="false"></textarea>
+  <div class="composer-foot">
+    <span class="hint" id="composerHint"></span>
+    <span class="spacer"></span>
+    <button id="btnCancel" class="btn ghost">取消</button>
+    <button id="btnSend" class="btn primary">发送</button>
+  </div>
+</div>
+
+<main class="grid">
+  <aside class="col left">
+    <section class="panel">
+      <h2>任务<span class="count" id="taskCount"></span></h2>
+      <div id="tasks" class="list tasks"></div>
+    </section>
+    <section class="panel grow">
+      <h2>会话<span class="count" id="sessCount"></span></h2>
+      <div id="sessions" class="list sessions"></div>
+    </section>
+  </aside>
+
+  <section class="col center">
+    <nav class="tabs" id="tabs"></nav>
+    <div id="detail" class="detail"><div class="empty">左边选个任务或会话</div></div>
+  </section>
+
+  <aside class="col right">
+    <section class="panel grow">
+      <h2>STATE.md</h2>
+      <pre id="stateFile" class="code"></pre>
+    </section>
+    <section class="panel grow">
+      <h2>human.log</h2>
+      <pre id="humanFile" class="code"></pre>
+    </section>
+  </aside>
+</main>
+
+<section class="console" id="consoleWrap">
+  <div class="console-head">
+    <span class="c-title">控制台</span>
+    <span class="dim" id="consoleMeta"></span>
+    <span class="spacer"></span>
+    <button id="btnBottom" class="mini">回到底部</button>
+    <button id="btnFold" class="mini">收起</button>
+  </div>
+  <pre id="console" class="code console-body"></pre>
+</section>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="/app.js"></script>
+</body>
+</html>

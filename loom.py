@@ -277,6 +277,26 @@ def kill_group(proc: subprocess.Popen, grace: float = 5.0) -> None:
         pass
 
 
+def wait_poll(proc: subprocess.Popen, timeout_s: float, slice_s: float = 1.0) -> int:
+    """分片等待，替代裸的 p.wait()。
+
+    Python 的信号处理函数要等当前阻塞调用返回才会跑。如果直接 wait(半小时)，
+    外面发来的 Ctrl+C / CTRL_BREAK 就得等到那半小时结束才被看见——从别的进程
+    打断（web 界面"打断"按钮）时尤其明显：终端里子进程会被一起打死所以看不出来，
+    单独给 loom 发信号就会卡住。
+    每片 1 秒，既不影响判断（时钟按 wall time 算），又让"人喊停"在一秒内生效。
+    """
+    end = time.monotonic() + timeout_s
+    while True:
+        left = end - time.monotonic()
+        if left <= 0:
+            raise subprocess.TimeoutExpired(proc.args, timeout_s)
+        try:
+            return proc.wait(timeout=min(left, slice_s))
+        except subprocess.TimeoutExpired:
+            continue
+
+
 # ---------------------------------------------------------------- 工作区
 
 class Work:
@@ -522,7 +542,7 @@ class Loom:
                   role: str = "", task: str = "-") -> tuple[int, bool]:
         p = self.spawn(sid, text, resume=resume, role=role, task=task)
         try:
-            rc = p.wait(timeout=timeout_s)
+            rc = wait_poll(p, timeout_s)
             return rc, False
         except subprocess.TimeoutExpired:
             kill_group(p)
@@ -564,13 +584,13 @@ class Loom:
                 self.work.log_session(sid, "worker", task.id, "exit(human-stop)")
                 return 130, True
             if idx >= len(marks):
-                rc = p.wait()
+                rc = wait_poll(p, 10 ** 9)
                 return rc, killed
             deadline = start + marks[idx][0] * budget_s
             remain = deadline - time.monotonic()
             if remain > 0:
                 try:
-                    rc = p.wait(timeout=remain)
+                    rc = wait_poll(p, remain)
                     return rc, killed
                 except subprocess.TimeoutExpired:
                     continue
@@ -598,7 +618,7 @@ class Loom:
                                resume=True, role="wrapup", task=task.id)
                 task.save(pid=p.pid, pid_start=proc_start_token(p.pid))
                 try:
-                    p.wait(timeout=WRAPUP_GRACE)
+                    wait_poll(p, WRAPUP_GRACE)
                 except subprocess.TimeoutExpired:
                     kill_group(p)
                 self.work.log_session(sid, "wrapup", task.id, "exit")
@@ -905,6 +925,10 @@ def main() -> int:
         raise KeyboardInterrupt
 
     signal.signal(signal.SIGINT, on_sigint)
+    # Windows 上从别的进程发不了 SIGINT，只能发 CTRL_BREAK（web 界面的"打断"走这条）。
+    # 两个信号走同一个处理函数：对 loop 来说，都是"人喊停"。
+    if hasattr(signal, "SIGBREAK"):
+        signal.signal(signal.SIGBREAK, on_sigint)
 
     try:
         if args.status:
