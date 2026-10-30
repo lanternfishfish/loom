@@ -62,8 +62,15 @@ def clip(s: str, n: int = 2000) -> str:
 
 
 def iso_ts(s) -> float | None:
-    if not s:
+    """loom 的 .state 里 started_at 是 float 时间戳，updated 是 ISO 字符串，两种都要认。"""
+    if s is None or s == "":
         return None
+    if isinstance(s, (int, float)):
+        return float(s)
+    try:
+        return float(s)
+    except (TypeError, ValueError):
+        pass
     try:
         return datetime.fromisoformat(str(s)).timestamp()
     except Exception:
@@ -378,8 +385,6 @@ class View:
             updated = iso_ts(st.get("updated"))
             if status == "running" and started:
                 duration = round(time.time() - started, 1)
-            elif status == "interrupted":
-                duration = None
             elif started and updated:
                 duration = round(updated - started, 1)
             else:
