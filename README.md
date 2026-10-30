@@ -132,6 +132,9 @@ python ui/loom_web.py                        # 默认 ./work，http://127.0.0.1:
 python ui/loom_web.py --workdir work --port 9000 --open
 ```
 
+Windows 上还有个更省事的入口：双击 `ui/start.cmd`。它 `cd` 到仓库根、用 `./work`、起服务并开浏览器，
+多给的参数会原样透传（`start.cmd --port 9000`）。就是一个批处理，删掉不影响别的。
+
 **能看到什么**
 
 左栏是一棵树，不是两个列表：**任务 → 会话**。一个任务下面挂它跑过的所有会话，时序从旧到新，
@@ -148,6 +151,9 @@ python ui/loom_web.py --workdir work --port 9000 --open
 没有框线、发光和终端配色——它是一个看板，不是终端。
 
 URL 会跟着选中项走（`#task:task-02-explain-path`、`#task:<id>:<sid>`），刷新和贴给别人都能落回同一处。
+
+面板本身**不存任何东西**：把它杀掉，`work/` 里的文件一个不少，重新拉起来看到的就是同一幕。
+所谓"会话丢失"只会是服务停了，不会是数据没了——先看 `work/sessions.log` 还在不在。
 
 **能做什么**：就两个按钮。
 
